@@ -8,6 +8,8 @@ import io.restassured.response.Response;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+
 public class UserTestCases extends BaseTest {
     UserClient user = new UserClient();
     Faker faker = new Faker();
@@ -61,7 +63,11 @@ public class UserTestCases extends BaseTest {
         String userId = postResponse.jsonPath().get("_id");
 
         getResponse = user.getUser(userId);
-        getResponse.then().statusCode(200);
+        getResponse.then().statusCode(200)
+                .body("nome", equalTo(name))
+                .body("email",equalTo(email))
+                .body("password",equalTo(pass))
+                .body("administrador",equalTo(adminTrue.toString()));
 
         String newName = faker.name().firstName().toString();
         putResponse = user.updateUser(userId,newName,email,pass,adminTrue);
